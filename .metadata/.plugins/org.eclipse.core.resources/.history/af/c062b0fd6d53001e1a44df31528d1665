@@ -1,0 +1,19 @@
+package kr.spring.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class MemberController {
+	
+	// 회원가입 클릭 시 회원가입 페이지 이동
+	@RequestMapping("/joinForm.do")
+	public String joinForm() {
+		// 컨트롤러에서 실행 시(return) views에서 시작
+		return "member/joinForm";
+	}
+	
+	@RequestMapping("/idCheck.do")
+	public
+	
+}

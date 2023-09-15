@@ -1,0 +1,14 @@
+package kr.spring.entity;
+
+public class Member {
+	// MemberVO
+	// 반드시 sql에서 생성한 테이블 컬럼명과 동일하게 할 것
+	private int memIdx;
+	private String memId;
+	private String memPw;
+	private String memName;
+	private int memAge;
+	private String memGender;
+	private String memEmail;
+	private String memProfile;
+}

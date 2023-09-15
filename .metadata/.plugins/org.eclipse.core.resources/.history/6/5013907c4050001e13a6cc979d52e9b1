@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.mapper.BoardMapper"> <!-- => interface 이름 -->
+
+<!-- boardMapper에서 사용하는 SQL문장을 모아두는 곳 -->
+	
+	<!-- MyBatis 스키마가 태그들을 정의함 -->
+	<select id="getLists" resultType="kr.spring.entity.Board">
+		<!-- 1. id는 해당 기능이 적혀있는 BoardMapper.java의 메서드명과 똑같이해줘야함 (찾아가기 위해서)
+			 2.   resultType-->
+		SELECT * FROM BOARD ORDER BY INDATE DESC
+	</select>
+	
+	<insert id="boardInsert" parameterType="kr.spring.entity.Board">
+		<!-- parameterType : 매개변수 -->
+		INSERT INTO BOARD(TITLE, CONTENT, WRITER) VALUES(#{title}, #{content}, #{writer})
+	</insert>
+
+	<select id="boardContent" parameterType="int" resultType="kr.spring.entity.Board">
+		<!-- sql문 실행을 통해, Board 타입으로 해당 게시글을 돌려줘야 함(resultType) -->
+		SELECT * FROM BOARD WHERE IDX=#{idx}
+	</select>
+	
+	<delete id="boardDelete" parameterType="int">
+		DELETE FROM BOARD WHERE IDX=#{idx}
+	</delete>
+	
+	<update id="boardUpdate" parameterType="ikr.spring.entity.Board">
+		UPDATE BOARD SET TITLE=#{title}, CONTENT=#{content}, WRITER=#{writer} WHERE IDX=#{idx}
+	</update>
+
+</mapper>
