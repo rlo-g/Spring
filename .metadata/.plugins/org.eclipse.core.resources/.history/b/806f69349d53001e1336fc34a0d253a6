@@ -82,7 +82,7 @@
     					<td style="width:110px; vertical-align:middle;">이메일</td>
     					<td colspan="2"><input type="email" name="memEmail" id="memEmail" class = "form-control" maxlength="50" placeholder="이메일을 입력하세요"></td>
     				</tr>
-					<!-- 잔디심기 -->
+					
 					<tr>
 						<td colspan="3" style="position: relative;">
 							<span id="pwMessage" style="color:red; position: absolute; top: 50%; transform: translateY(-50%); right: 115px; text-align: right;"></span>
