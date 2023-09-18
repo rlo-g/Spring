@@ -10,7 +10,11 @@ import kr.spring.entity.Member;
 @Mapper  // MyBatis가 이 interface를 찾을 수 있도록 달아주는 부분
 public interface MemberMapper {
 
-	public Member idCheck(String memID);
+	public Member idCheck(String memId);
+
+	public int join(Member vo);
+
+	public Member login(Member vo);
 	
 	
 

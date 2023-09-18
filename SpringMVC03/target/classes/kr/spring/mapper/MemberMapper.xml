@@ -8,7 +8,17 @@
 	<select id="idCheck" parameterType="String" resultType="kr.spring.entity.Member">
 							<!-- 받아오는 매개변수의 타입 String -->
 									<!--  돌려줄 정보가 있으므로 resultType="kr.spring.entity.Member" -->
-		SELECT * FROM MEMBER WHERE MEMID = #{memID}	
+		SELECT * FROM MEMBER WHERE MEMID = #{memId}	
 	</select>
 
+	<insert id="join" parameterType="kr.spring.entity.Member">
+		<!--  insert는 기본적으로 int로 값을 돌려주기 때문에 resultType을 쓰지 않음  -->
+		INSERT INTO MEMBER(MEMID, MEMPW, MEMNAME, MEMAGE, MEMGENDER, MEMEMAIL, MEMPROFILE) 
+		VALUES(#{memId}, #{memPw}, #{memName}, #{memAge}, #{memGender}, #{memEmail}, #{memProfile})
+	</insert>
+	
+	<select id="login" parameterType="kr.spring.entity.Member" resultType="kr.spring.entity.Member">
+		SELECT * FROM MEMBER 
+		WHERE MEMID = #{memId} AND MEMPW = #{memPw}
+	</select>
 </mapper>

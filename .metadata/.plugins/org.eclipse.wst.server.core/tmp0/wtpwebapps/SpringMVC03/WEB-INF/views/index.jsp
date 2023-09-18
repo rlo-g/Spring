@@ -22,6 +22,47 @@
   	<p>Only when the button is clicked, the navigation bar will be displayed.</p>
 </div>
 
+
+
+
+
+  	<!-- Modal ()-->
+	  <div class="modal fade" id="myMessage" role="dialog">
+	    <div class="modal-dialog modal-sm">      
+	      <div class="modal-content" id="messageType">
+	        <div class="modal-header panel-heading">
+	          <button type="button" class="close" data-dismiss="modal">&times;</button>
+	          <h4 class="modal-title">${msgType}</h4>
+	        </div>
+	        <div class="modal-body">
+	          <p id="">${msg}</p>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        </div>
+	      </div>      
+	    </div>
+	  </div>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			if(${not empty msgType}){
+				// msgType이 비어있지 않을 경우 (회원가입 실패) - el식
+				if(${msgType eq "성공 메세지"}) {
+					// msgType이 "실패 메세지"일 경우
+					$("#messageType").attr("class", "modal-content panel-success");
+				}
+				$("#myMessage").modal("show");
+			}			
+			
+			
+		});
+	
+	
+	</script>
+
+
+
 </body>
 </html>
     
