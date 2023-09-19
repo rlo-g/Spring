@@ -15,6 +15,8 @@ public interface MemberMapper {
 	public int join(Member vo);
 
 	public Member login(Member vo);
+
+	public int update(Member member);
 	
 	
 

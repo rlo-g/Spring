@@ -63,7 +63,7 @@ public class MemberController {
 			// msgType : 실패메세지,  msg : "모든 내용을 입력하세요"
 			//   - model 유지는 forwarding 방식만 가능하므로 model에 저장해서 보낼 수 없음
 			//   - < RedirectAttributes >
-			//      - redirect 방식으로 이동할 때 보낼 데이터를 저장하는 객체 (일회성)  
+			//      - redirect 방식으로 이동할 때 보낼 데이터를 저장하는 객체 (=모델, 일회성)  
 			
 			rttr.addFlashAttribute("msgType", "실패 메세지");
 			rttr.addFlashAttribute("msg", "모든 내용을 입력하세요.");
@@ -143,5 +143,57 @@ public class MemberController {
 		}
 	}
 	
+	
+	@RequestMapping("/updateForm.do")
+	public String updateForm() {
+		return "member/updateForm";
+	}
+	
+	
+	
+	@RequestMapping("/update.do")
+	public String update(Member member, RedirectAttributes rttr, HttpSession session) {
+		System.out.println(member.toString());
+				
+		// 문제
+		// mapper의 update 메서드를 통해 해당 회원의 정보 수정하기
+		
+		// 조건 1. 하나라도 입력하지 않은 데이터가 있으면 updateForm.jsp로 다시 돌려보내면서 "모든 내용을 입력하세요"모달창 띄우기
+		if(member.getMemPw() == null || member.getMemPw().equals("") ||
+				member.getMemName() == null || member.getMemName().equals("") ||
+				member.getMemAge() == 0 ||
+				member.getMemEmail() == null || member.getMemEmail().equals("")) {
+		
+			rttr.addFlashAttribute("msgType", "실패 메세지");
+			rttr.addFlashAttribute("msg", "모든 내용을 입력하세요.");
+			return "redirect:/updateForm.do";
+			
+		}else {
+		  // 유효성 검사 성공
+			
+			member.setMemProfile("");
+			int cnt = mapper.update(member);
+					
+			if(cnt != 1) {
+				// 조건 2. 회원수정 실패 시 updateForm.jsp로 다시 돌려 보내면서 "회원 정보 수정이 실패했습니다" 모달창 띄우기
+				System.out.println("회원수정 실패");
+				rttr.addFlashAttribute("msgType", "실패 메세지");
+				rttr.addFlashAttribute("msg", "회원정보 수정에 실패했습니다.");				
+				return "redirect:/updateForm.do";			
+				
+			}else {
+				// 조건 3. 회원수정 성공 시 index.jsp로 보내고 "회원정보 수정에 성공했습니다" 모달창 띄우기
+				System.out.println("회원수정 성공");
+				rttr.addFlashAttribute("msgType", "성공 메세지");
+				rttr.addFlashAttribute("msg", "회원정보 수정에 성공했습니다.");				
+				
+				// 로그인한 정보는 session에서 유지되고 있음 -> 회원정보 수정 시 session도 업데이트 해줘야함
+				session.setAttribute("mvo", member);	
+
+				return "redirect:/";
+				
+			
+		} }
+	}
 	
 }

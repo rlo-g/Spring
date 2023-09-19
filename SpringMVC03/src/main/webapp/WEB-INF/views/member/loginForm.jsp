@@ -114,9 +114,6 @@
 				if(${msgType eq "실패 메세지"}) {
 					// msgType이 "실패 메세지"일 경우
 					$("#messageType").attr("class", "modal-content panel-warning");
-				}else if(${msgType eq "성공 메세지"}) {
-					
-					$("#messageType").attr("class", "modal-content panel-success");
 				}
 				$("#myMessage").modal("show");
 			}

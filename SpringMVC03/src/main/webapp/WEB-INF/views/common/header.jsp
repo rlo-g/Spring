@@ -51,27 +51,17 @@
 	      <!-- 로그인/회원가입 안 했을 시 나타날 메뉴바 -->
 	      <c:if test="${empty mvo}">
 			  <ul class="nav navbar-nav navbar-right">
-		         <li class="dropdown">
-		            <a class="dropdown-toggle" data-toggle="dropdown" href="#">접속하기 <span class="caret"></span></a>
-		            <ul class="dropdown-menu">
-		              <li><a href="${contextPath}/loginForm.do">로그인</a></li>
-		              <li><a href="${contextPath}/joinForm.do">회원가입</a></li>
-		            </ul>
-		         </li>
+		           <li><a href="${contextPath}/loginForm.do"><span class="glyphicon glyphicon-log-in"><span style="margin-left: 5px;">로그인</span></span></a></li>
+		           <li><a href="${contextPath}/joinForm.do"><sapn class="glyphicon glyphicon-user"><span style="margin-left: 5px;">회원가입</span></sapn></a></li>		          
 		      </ul>
 	      </c:if>
 	      
 	      <!-- 로그인/회원가입 했을 시 나타날 메뉴바 -->
 	      <c:if test="${not empty mvo}">
-			  <ul class="nav navbar-nav navbar-right">
-		         <li class="dropdown">
-		            <a class="dropdown-toggle" data-toggle="dropdown" href="#">접속하기 <span class="caret"></span></a>
-		            <ul class="dropdown-menu">
-		              <li><a href="#">회원정보 수정</a></li>
-		              <li><a href="#">프로필 사진 등록</a></li>
-		              <li><a href="${contextPath}/logout.do">로그아웃</a></li>
-		            </ul>
-		         </li>
+			  <ul class="nav navbar-nav navbar-right">	  		
+		            <li><a href="${contextPath}/updateForm.do"><span class="glyphicon glyphicon-pencil">회원정보 수정</span></a></li>
+		            <li><a href="#"><span class="glyphicon glyphicon-upload">프로필 사진 등록</span></a></li>
+		            <li><a href="${contextPath}/logout.do"><span class="glyphicon glyphicon-log-out">로그아웃</span></a></li>
 		      </ul>
 	      </c:if>
 	      
