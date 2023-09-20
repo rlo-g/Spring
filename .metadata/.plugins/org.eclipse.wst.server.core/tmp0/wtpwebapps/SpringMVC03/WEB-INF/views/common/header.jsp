@@ -58,10 +58,24 @@
 	      
 	      <!-- 로그인/회원가입 했을 시 나타날 메뉴바 -->
 	      <c:if test="${not empty mvo}">
-			  <ul class="nav navbar-nav navbar-right">	  		
-		            <li><a href="${contextPath}/updateForm.do"><span class="glyphicon glyphicon-pencil">회원정보 수정</span></a></li>
-		            <li><a href="#"><span class="glyphicon glyphicon-upload">프로필 사진 등록</span></a></li>
-		            <li><a href="${contextPath}/logout.do"><span class="glyphicon glyphicon-log-out">로그아웃</span></a></li>
+			  <ul class="nav navbar-nav navbar-right">	  
+			  	<li>
+			  	
+			  		<c:if test="${mvo.memProfile ne ''}">
+			  		<!-- memProfile이 ''가 아닌 경우(비어있지 않는 경우) 해당 프로필 이미지 띄워줌-->
+				  		<img src="${contextPath}/resources/upload/${mvo.memProfile}" style="width:50px; heigth:50px;" class="img-circle">
+				  		${mvo.memName}님 Welcome!			  		
+			  		</c:if>
+			  		
+			  		<c:if test="${mvo.memProfile eq ''}">
+			  		<!-- memProfile이 ''일 경우(비어있는 경우) 기본 프로필 이미지를 띄워줌 -->
+				  		<img src="${contextPath}/resources/images/default.png" style="width:50px; heigth:50px;" class="img-circle">
+				  		${mvo.memName}님 Welcome!			  		
+			  		</c:if>
+			  	</li>		
+		        <li><a href="${contextPath}/updateForm.do"><span class="glyphicon glyphicon-pencil">회원정보수정</span></a></li>
+		        <li><a href="${contextPath}/imageForm.do"><span class="glyphicon glyphicon-upload">프로필사진등록</span></a></li>
+		        <li><a href="${contextPath}/logout.do"><span class="glyphicon glyphicon-log-out">로그아웃</span></a></li>
 		      </ul>
 	      </c:if>
 	      

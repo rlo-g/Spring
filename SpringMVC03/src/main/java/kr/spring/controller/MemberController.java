@@ -1,5 +1,9 @@
 package kr.spring.controller;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.oreilly.servlet.MultipartRequest;
+import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 import kr.spring.entity.Member;
 import kr.spring.mapper.MemberMapper;
@@ -44,6 +51,7 @@ public class MemberController {
 			return 1;
 		}
 	}
+	
 	
 	@RequestMapping("/join.do")
 	public String join(Member vo, RedirectAttributes rttr, HttpSession session) {
@@ -190,10 +198,120 @@ public class MemberController {
 				// 로그인한 정보는 session에서 유지되고 있음 -> 회원정보 수정 시 session도 업데이트 해줘야함
 				session.setAttribute("mvo", member);	
 
-				return "redirect:/";
-				
-			
+				return "redirect:/";		
 		} }
+	}
+	
+	
+	
+	@RequestMapping("/imageForm.do")
+	public String imageForm() {
+		
+		return "member/imageForm";    // imageForm.jsp로 이동
+	}
+	
+	
+	@RequestMapping("/imageUpdate.do")
+	public String imageUpdate(HttpServletRequest request, HttpSession session, RedirectAttributes rttr) {
+		
+		// 파일 업로드 객체는 내부적으로 만들어져있지 않아서 직접 생성해야함
+		// 파일 업로드를 할 수 있게 도와주는 객체 MultipartRequest(cos.jar)를 생성하기 위해서는 다섯개의 정보 필요
+		//   - 요청 데이터, 저장 경로, 최대 크기, 인코딩, 파일명 중복제거
+		MultipartRequest multi = null;
+		
+		// 1) 요청데이터 - 내가 올린 데이터를 저장하고 있는 객체 (request) -->  HttpServletRequest request		
+		
+		// 2) 저장경로 - 회원 별 업로드 이미지는 모두 webapp-resources-upload에 저장됨	
+		String savePath = request.getRealPath("resources/upload");
+		
+		// 3) 이미지 최대 크기
+		int fileMaxSize = 10 * 1024 * 1024;
+		
+		
+		
+		// A. 기존 프로필 이미지 삭제
+		//  - 로그인 한 회원의 프로필 값을 가져와야함	
+		String memId = ((Member)session.getAttribute("mvo")).getMemId();
+	
+		// getMember 메서드는 memId와 일치하는 회원의 Member 정보를 가져온다
+		String oldImg = mapper.getMember(memId).getMemProfile();    // 기존 프로필 이미지
+		
+		
+		// B. 기존 프로필 사진 삭제
+		//  - 파일 객체 생성
+		//   - savaPath 안에 저장되어 있는 oldImg를 가져옴 (모든 이미지 파일은 savePath에 저장되어 있음)
+		File oldFile = new File(savePath+"/"+oldImg);
+		if(oldFile.exists()) {
+			// oldFile이 존재할 때만 이미지를 삭제
+			oldFile.delete();
+		}
+		
+		
+		
+		try {
+			// 1)~3)과 인코딩, 파일명 중복제거를 multi 객체 안에 넣어준다
+			multi = new MultipartRequest(request, savePath, fileMaxSize, "UTF-8", new DefaultFileRenamePolicy());
+		} catch (IOException e) {  												// 중복된 이름이 올라왔을 때 뒤에 숫자를 붙여줌
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		// C. 업로드 파일 확장자 제한하기
+		//  - 내가 업로드한 파일 가져오기
+		File file = multi.getFile("memProfile");
+		
+		if(file != null) {
+			// 업로드가 된 상태
+			// System.out.println(file.getName());
+			String ext = file.getName().substring(file.getName().lastIndexOf(".") + 1);  	
+											// substing - 특정 문자열을 기준으로 자름
+											// 파일 이름의 마지막 .(확장자 시작점)을 찾아서 그것을 기준으로 그 뒤의 문자열을 가져오겠다
+			
+			ext = ext.toUpperCase();  // 소문자(png) --> 대문자(PNG)
+			
+			if(!(ext.equals("PNG") || ext.equals("GIF") || ext.equals("JPG"))) {
+				// (!) 확장자가 png, gif, jpg가 아니라면
+				
+				if(file.exists()) {
+					// 등록된 파일이 있을 때, 파일 삭제
+					file.delete();
+					System.out.println("잘못된 이미지 파일");
+					rttr.addFlashAttribute("msgType", "실패 메세지");
+					rttr.addFlashAttribute("msg", "이미지 파일만 업로드 가능합니다. (PNG, JPG, GIF)");				
+					return "redirect:/imageForm.do";					
+					
+				}
+			}
+		}
+		
+		
+		// 로그인 한 사람의 아이디 값을 가져와서 해당하는 아이디에 이미지 값을 넣어줌
+		// 아이디 값은 session에 저장되어 있음 --> session에서 가져오기
+		//   ---> 이미지 삭제를 구현하기 위해 위에서 코드 실행함 (String memId ~)
+		
+		
+		// 업로드한 파일의 이름을 가져오는 코드 - input 태그의 name 값을 넣어줌
+		String newProfile = multi.getFilesystemName("memProfile");
+		
+		// memId와 newProfile을 mvo에 저장해주기
+		Member mvo = new Member();
+		mvo.setMemId(memId);
+		mvo.setMemProfile(newProfile);
+		
+		mapper.profileUpdate(mvo);
+		
+		// 로그인한 정보는 session에서 유지되고 있음 -> 회원정보 수정 시 session도 업데이트 해줘야함
+		//  - 사진 업데이트 후 수정된 회원정보를 다시 가져와서 session에 담기
+		//  - getMember를 통해 회원정보를 다시 가져와서(memId를 알고있으므로 가능) session에 담아준다
+		Member m = mapper.getMember(memId);	
+		session.setAttribute("mvo", m);
+		
+		// 위의 코드들이 모두 성공적으로 실행 됨
+		System.out.println("잘못된 이미지 파일");
+		rttr.addFlashAttribute("msgType", "성공 메세지");
+		rttr.addFlashAttribute("msg", "프로필이 등록되었습니다.");				
+		return "redirect:/";		
 	}
 	
 }

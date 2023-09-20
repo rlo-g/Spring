@@ -17,6 +17,10 @@ public interface MemberMapper {
 	public Member login(Member vo);
 
 	public int update(Member member);
+
+	public void profileUpdate(Member mvo);
+
+	public Member getMember(String memId);
 	
 	
 
