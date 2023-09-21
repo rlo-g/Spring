@@ -1,12 +1,15 @@
 -- SQL 문장 작성 --
 
+DROP TABLE BOARD;
+
 -- 게시판 --
 CREATE TABLE BOARD(
 	-- VO에 있는 필드명과 테이블의 컬럼명이 똑같아야함 --
 	
 	-- NUMBER(oracle) --> int(MySQL) --
 	-- AUTO_INCREMENT : 값을 안 넣어도 알아서 1씩 증가해서 들어감 (oracle - SEQUENCE) --
-	IDX int NOT NULL AUTO_INCREMENT, 
+	IDX int NOT NULL AUTO_INCREMENT,
+	MEMID VARCHAR(20) NOT NULL,  -- 해당 글 작성자만 수정/삭제 -
 	TITLE VARCHAR(100) NOT NULL,
 	CONTENT VARCHAR(2000) NOT NULL,
 	WRITER VARCHAR(30) NOT NULL,

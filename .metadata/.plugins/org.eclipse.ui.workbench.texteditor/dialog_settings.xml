@@ -6,7 +6,9 @@
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
+		<item key="selection" value="plug"/>
 		<list key="findhistory">
+			<item value="plug"/>
 			<item value="&#x09;&lt;filter&gt; "/>
 			<item value="/Users/EGOVEDU/eGovFrame-3.10.0/"/>
 		</list>
