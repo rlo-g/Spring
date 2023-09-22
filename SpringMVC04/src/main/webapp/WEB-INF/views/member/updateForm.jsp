@@ -31,7 +31,7 @@
     		<div class="panel-body">
     		
     		<form action="${contextPath}/update.do" method="post">
-    			
+    			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
     			<!-- db로 넘어갈 비밀번호 input 태그 -->
     			<!-- 두개의 pw1, pw2를 memPW에 담아올 수 없음 > hidden 타입의 태그 생성 value 값이 없음 > 두 개의 비밀번호가 일치했을 때 value 값이 채워짐  -->
     			<input type="hidden" name="memPw" id="memPw" value="">

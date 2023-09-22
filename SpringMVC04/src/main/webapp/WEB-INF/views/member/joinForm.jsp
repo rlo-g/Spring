@@ -31,7 +31,12 @@
     		<div class="panel-body">
     		
     		<form action="${contextPath}/join.do" method="post">
-    			
+    			<!-- 
+    				이제는 서버로 단순히 회원가입 정보만 전달하는 것이 아니라
+    				서버에서 발행한 토큰도 전달해야 회원가입이 가능함
+    			 -->
+    			                        <!-- 내부적으로 있는 토큰 사용 -->
+    			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
     			<!-- db로 넘어갈 비밀번호 input 태그 -->
     			<!-- 두개의 pw1, pw2를 memPW에 담아올 수 없음 > hidden 타입의 태그 생성 value 값이 없음 > 두 개의 비밀번호가 일치했을 때 value 값이 채워짐  -->
     			<input type="hidden" name="memPw" id="memPw" value="">
@@ -155,6 +160,8 @@
 			// 입력할 때마다 서버로부터 값을 받아와서 새로고침 없이 바로 보여줌
 			$.ajax({
 				url : "${contextPath}/idCheck.do",  // el, jstl은 java 언어가 아님 (표현식)
+				// get 방식 : 데이터베이스에서 값을 select 할 때 사용 (게시글 전체보기, 중복확인 등)
+				// insert, update 등은 post 방식 사용
 				type : "get",
 				data : {"memId":memId},
 				success : function(data){

@@ -119,6 +119,17 @@
 	
 	<!-- JavaScript -->
     <script type="text/javascript">
+    	
+    
+    	// ajax에서도 post 방식으로 데이터를 보내기 위해서는
+    	// csrf token 값을 전달해야 한다
+    	
+    	// 1. token의 이름과 값 가져오기
+    	//  - ajax에서 csrf의 이름을 사용할 때는 parameterName이 아니라 headerName 사용
+    	var csrfHeaderName = "${_csrf.headerName}";
+    	var csrfTokenName = "${_csrf.token}";
+    
+    
 	    $(document).ready(function(){
 	    	// html이 다 로딩되고 나서 아래 코드 실행
 	    	loadList();
@@ -136,6 +147,8 @@
 				error : function() { alert("error"); }				
 			});		
 		}
+		
+		<!-- 게시판 화면 -->
 		function makeView(data) {
 			// loadList() 성공 시 넘어오는 함수
 			// console.log(data);  --> 배열의 형태로 리스트가 나오는 것을 알 수 있음  --> 반복문을 통해 리스트 꺼내오기
@@ -174,8 +187,7 @@
 				listHtml += "</textarea>";	
 				
 				
-				<!-- 수정 및 삭제 화면 -->
-				
+				<!-- 수정 및 삭제 화면 -->				
 				// 해당 작성자만 가능
 				//  -- 조건문 안에서 EL식을 쓰려먼 문자열로 감싸줘야한다
 				if("${mvo.memId}" == obj.memId){  
@@ -204,7 +216,7 @@
 			goList();
 		}
 		
-		
+		<!-- 글쓰기 버튼 -->
 		function goForm() {
 			// 글쓰기 버튼 기능 - 비동기
 			// goForm 함수 생성 후 view는 감추고 wform을 보이게 하기
@@ -213,12 +225,14 @@
 			$("#wform").css("display", "block");	
 		}
 		
+		<!-- 게시글 목록 이동 -->
 		function goList() {
 			// 게시글 목록으로 가는 기능 - 비동기
 			$("#boardList").css("display", "table-row");   // block 대신 table-row
 			$("#wform").css("display", "none");	
 		}
 		
+		<!-- 게시글 등록 -->
 		function goInsert() {
 			// 게시글 등록 기능 - 비동기
 			// form 태그 안에 들어있는 태그들에 작성된 값을 직렬화 해서 가져오기
@@ -228,13 +242,17 @@
 			$.ajax({
 				url : "board/new",   // 데이터를 보낼 주소
 				type : "post",		      // 게시글 작성 - post 방식 (데이터를 많이 넣으므로)
-				data : fData,            // 보낼 데이터
+				data : fData,   // 보낼 데이터
+				beforeSend : function(xhr){
+					xhr.setRequestHeader(csrfHeaderName, csrfTokenName)
+				},     // get 제외 모든 방식에 csrf 관련 값 넣어주기
 				success : loadList,
 				error : function(){alert("error!")}
 			});
 			$("#fclear").trigger("click");   // 클릭 시 취소 버튼 자동실행
 		}
 		
+		<!-- 게시글 조회수 -->
 		function goContent(idx) {
 			// 클릭한 게시글 제목에 해당되는 idx 값을 받아옴
 			
@@ -265,6 +283,9 @@
 					url : "board/count/" + idx,   // 게시글의 고유 번호를 가지고 경로에 값을 보내는 것
 					type : "put",				  //   --> url을 간단하게 하여 클라이언트가 접근을 쉽게하도록 하려고
 					// put 방식이지만 data를 json 형태로 보내는 것이 아니기 때문에 contentType, data를 쓰지 않아도 됨
+					beforeSend : function(xhr){
+						xhr.setRequestHeader(csrfHeaderName, csrfTokenName)
+					},
 					success : loadList,
 					error : function() { alert("error")}
 				});
@@ -272,19 +293,22 @@
 			}
 		}
 		
-		
+		<!-- 게시글 삭제 -->
 		function goDelete(idx) {
 			$.ajax({
 				url : "board/" + idx,  // url에 goContent의 url과 동일 
 				type: "delete",       // 삭제 상태를 보내는 것. 해당 서버에서만 보낼 수 있음, 다른 서버는 불가능
 										// 똑같은 url이지만 상태는 다름 --> rest..
 				data : {"idx" : idx},
+				beforeSend : function(xhr){
+					xhr.setRequestHeader(csrfHeaderName, csrfTokenName)
+				},
 				success : loadList,
 				error : function() { alert("error");}
 			});
 		}
 		
-		
+		<!-- 게시글 수정 화면 -->
 		function goUpdateForm(idx) {
 			// 매개변수로 idx가 넘어옴 
 			
@@ -306,7 +330,7 @@
 			$("#ub" + idx).html(newBtn);
 		}
 		
-		
+		<!-- 게시글 수정 -->
 		function goUpdate(idx) {
 			var title = $("#nt" + idx).val();
 			var content = $("#ta" + idx).val();
@@ -326,6 +350,9 @@
 				contentType : "application/json;charset=utf-8",		
 				// put 사용해서 데이터를 보낼 시 json 문자열로 변환시켜서 보내줘야 함 --> JSON.stringify()
 				data : JSON.stringify({"idx" : idx, "title" : title, "content" : content, "writer" : writer}),  // 보낼 데이터
+				beforeSend : function(xhr){
+					xhr.setRequestHeader(csrfHeaderName, csrfTokenName)
+				},
 				success : loadList,
 				erroe : function(){ alert("error!")}
 			});

@@ -31,7 +31,9 @@
     		<div class="panel-body">
     		
     	   <!-- 파일 업로드 시, image/video/pdf 등의 파일을 보내기 위해서 인코딩 타입 변경 -->
-    		<form action="${contextPath}/imageUpdate.do" method="post" enctype="multipart/form-data">
+    			<!-- 파일 업로드는 토큰을 get 방식으로 넘겨도 post로 넘어감 (multipart이므로?) -->
+    			<form action="${contextPath}/imageUpdate.do?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
+    		
     			
     			<table class="table table-bordered" style="text-align:center; border:1px solid #dddddd">
     				<tr>
