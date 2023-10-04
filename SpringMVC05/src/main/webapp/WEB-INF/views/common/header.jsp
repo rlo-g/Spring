@@ -63,15 +63,38 @@
 			  	
 			  		<c:if test="${mvo.memProfile ne ''}">
 			  		<!-- memProfile이 ''가 아닌 경우(비어있지 않는 경우) 해당 프로필 이미지 띄워줌-->
-				  		<img src="${contextPath}/resources/upload/${mvo.memProfile}" style="width:50px; heigth:50px;" class="img-circle">
-				  		${mvo.memName}님 Welcome!			  		
+				  		<img src="${contextPath}/resources/upload/${mvo.memProfile}" style="width:50px; heigth:50px;" class="img-circle">				  					  		
 			  		</c:if>
 			  		
 			  		<c:if test="${mvo.memProfile eq ''}">
 			  		<!-- memProfile이 ''일 경우(비어있는 경우) 기본 프로필 이미지를 띄워줌 -->
-				  		<img src="${contextPath}/resources/images/default.png" style="width:50px; heigth:50px;" class="img-circle">
-				  		${mvo.memName}님 Welcome!			  		
+				  		<img src="${contextPath}/resources/images/default.png" style="width:50px; heigth:50px;" class="img-circle">			  		
 			  		</c:if>
+			  		
+			  		${mvo.memName}님 Welcome!
+			  		
+			  		[
+			  			<!-- 권한 정보 띄우기  -->
+			  			<!-- 회원이 가진 권한의 리스트만큼 반복 돌면서 꺼내기 -->
+			  			<c:forEach items="${mvo.authList}" var="auth">
+			  				<!-- mvo.authList만큼 반복 돌면서 auth에 담음 -->
+			  				<c:choose>
+			  					<c:when test="${auth.auth eq 'ROLE_USER'}">
+			  					<!-- auth vo 안의 auth를 가져왔는데 권한이 'ROLE_USER'와 같다면 -->
+			  						U
+			  					</c:when>
+			  					<c:when test="${auth.auth eq 'ROLE_MANAGER'}">
+			  						M
+			  					</c:when>
+			  					<c:when test="${auth.auth eq 'ROLE_ADMIN'}">
+			  						A
+			  					</c:when>
+			  				</c:choose>
+			  			</c:forEach>
+			  		
+			  		]
+			  		
+			  		
 			  	</li>		
 		        <li><a href="${contextPath}/updateForm.do"><span class="glyphicon glyphicon-pencil">회원정보수정</span></a></li>
 		        <li><a href="${contextPath}/imageForm.do"><span class="glyphicon glyphicon-upload">프로필사진등록</span></a></li>

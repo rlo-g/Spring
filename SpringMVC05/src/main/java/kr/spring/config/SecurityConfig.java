@@ -16,7 +16,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	// Spring Security 환경설정하는 클래스
 	// WebConfig가 가져다가 씀
 	// WebSecurityConfigurerAdapter - 요청에 대한 보안 설정을 해주는 클래스
+	// 보안 설정
 
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// 요청에 대한 보안 설정 하는 곳

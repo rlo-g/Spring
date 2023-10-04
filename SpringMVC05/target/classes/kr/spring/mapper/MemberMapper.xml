@@ -19,9 +19,14 @@
 		#{memId}, #{memPw}, #{memName}, #{memAge}, #{memGender}, #{memEmail}, #{memProfile})
 	</insert>
 	
-	<select id="login" parameterType="kr.spring.entity.Member" resultType="kr.spring.entity.Member">
-		SELECT * FROM MEMBER 
-		WHERE MEMID = #{memId} AND MEMPW = #{memPw}
+	<select id="login" parameterType="kr.spring.entity.Member" resultMap="memberMap">
+																<!-- memberMap 형태로 받아오겠다 -->
+		<!-- 멤버 권한도 함께 가져와야함-->
+		<!-- 암호화 된 pw를 복호화해서 입력한 Pw와 일치하는지 확인해야함 -->
+		SELECT * 
+		FROM MEMBER mem LEFT OUTER JOIN AUTH auth 
+		ON mem.MEMID=auth.MEMID
+		WHERE mem.MEMID = #{memId}		
 	</select>
 	
 	<update id="update" parameterType="kr.spring.entity.Member">
@@ -36,8 +41,45 @@
 		WHERE MEMID=#{memId}
 	</update>
 	
-	<select id="getMember" parameterType="String" resultType="kr.spring.entity.Member">
+	<!-- 회원 정보를 가져오는 sql문 -->
+	<select id="getMember" parameterType="String" resultMap="memberMap">
 							<!-- 받아오는 매개변수의 타입 String -->
-		SELECT * FROM MEMBER WHERE MEMID=#{memId}
+							<!-- sql에서 새로 만들어낸 타입을 반환 -->
+		SELECT * 
+		FROM MEMBER mem LEFT OUTER JOIN AUTH auth 
+		ON mem.MEMID=auth.MEMID
+		WHERE mem.MEMID = #{memId}
 	</select>
+	
+	<resultMap type="kr.spring.entity.Auth" id="authMap">
+										<!-- id : sql에서 사용할 수 있는 새로운 vo 타입을 만듦-->
+		<id property="no" column="no" />   <!-- primaryKey -->
+		<result property="memId" column="memId" />
+		<result property="auth" column="auth" />
+	</resultMap>
+	
+	<resultMap type="kr.spring.entity.Member" id="memberMap">
+		<id property="memIdx" column="memIdx"/>
+		<result property="memId" column="memId"/>
+		<result property="memPw" column="memPw"/>
+		<result property="memName" column="memName"/>
+		<result property="memAge" column="memAge"/>
+		<result property="memGender" column="memGender"/>
+		<result property="memEmail" column="memEmail"/>
+		<result property="memProfile" column="memProfile"/>
+		 <!-- list 형태(배열)인 authList를 위에 정의한 resultMap에서 받아옴  -->
+		<collection property="authList" resultMap="authMap"/>
+	</resultMap>
+	
+	
+	
+	<insert id="authInsert" parameterType="kr.spring.entity.Auth">
+								<!-- 매개변수o, 반환 타입x -->
+		INSERT INTO AUTH(MEMID, AUTH) VALUES(#{memId}, #{auth})
+	</insert>
+	
+	
+	<delete id="authDelete" parameterType="String">
+		DELETE FROM AUTH WHERE MEMID = #{memId}
+	</delete>
 </mapper>

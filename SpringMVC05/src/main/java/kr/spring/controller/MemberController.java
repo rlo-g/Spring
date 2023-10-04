@@ -2,6 +2,7 @@ package kr.spring.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
+import kr.spring.entity.Auth;
 import kr.spring.entity.Member;
 import kr.spring.mapper.MemberMapper;
 
@@ -99,14 +101,42 @@ public class MemberController {
 			
 			int cnt = mapper.join(vo);  // 회원가입 성공 여부 기록 변수 cnt
 			
+			
+			// (+) 추가 : 권한테이블에 회원의 권한 저장하기
+			//   - 권한의 배열 형태 필요 : 회원에 따라 가지고 있는 권한의 수가 다르기 때문에
+			List<Auth> list = vo.getAuthList();
+			for(Auth auth : list) {
+				// for each?
+				// list 배열에서 하나씩 떼서 auth에 넣음
+				if(auth.getAuth() != null) {
+					// 권한 값이 존재할 경우에만 권한 테이블에 값 넣기
+					
+					Auth saveVo = new Auth();
+					
+					// 아이디, 권한정보 넣어주기
+					// no의 경우, auth increment 설정되어 있기 때문에 값을 넣지 않아도 됨 
+					saveVo.setMemId(vo.getMemId());    // vo에 저장되어 있는 회원 아이디 넣기
+					saveVo.setAuth(auth.getAuth());    // 권한 넣기
+					
+					// 권한 저장
+					mapper.authInsert(saveVo);
+					
+				}
+			}
+			
 			if(cnt == 1) {
 				System.out.println("회원가입 성공!");
 				rttr.addFlashAttribute("msgType", "성공 메세지");
-				rttr.addFlashAttribute("msg", "회원가입에 성공했습니다!");		
-				
+				rttr.addFlashAttribute("msg", "회원가입에 성공했습니다!");	
+								
 				// 회원가입 성공 시 로그인 기능까지 실행하기
 				//  - 회원가입에 대한 정보를 session에 넣어줌
 				session.setAttribute("mvo", vo);
+				
+				// 회원 가입 성공 시 회원정보 + 권한정보까지 가져오기
+				Member mvo = mapper.getMember(vo.getMemId());
+				session.setAttribute("mvo", mvo);
+				// mapper에게 memid와 일치하는 회원 정보를 모두 가져와 달라고 다시 요청
 				
 				// 회원가입 후, index.jsp ("/")로 이동
 				return "redirect:/";
@@ -148,7 +178,17 @@ public class MemberController {
 		
 		Member mvo = mapper.login(vo);   // 로그인 후 해당 회원의 정보를 모두 받아와야 하므로 Member 객체에 저장
 		
-		if(mvo != null) {
+		if(mvo != null && pwEncoder.matches(vo.getMemPw(), mvo.getMemPw())) {
+			// mvo가 null이 아니고 pw가 일치한다면 로그인 성공
+			
+			// (+) 추가 : 비밀번호 일치 여부 체크
+			//   - 비밀번호가 암호화되어 있으므로 sql문에서 확인 불가능
+			//   - 암호화 시킬 때 passwordEncoder를 사용 했음 ---> 복호화도 가능
+			// 로그인할 때 입력한 정보가 담긴 곳 vo
+			// 아이디가 일치하는 회원의 정보가 담긴 곳 mvo
+			//   --> 입력한 pw와 가져온 회원 정보의 pw가 일치하는지 판단 (t/f)
+			
+			
 			// 로그인 성공
 			System.out.println("로그인 성공!");
 			
@@ -186,7 +226,9 @@ public class MemberController {
 		if(member.getMemPw() == null || member.getMemPw().equals("") ||
 				member.getMemName() == null || member.getMemName().equals("") ||
 				member.getMemAge() == 0 ||
-				member.getMemEmail() == null || member.getMemEmail().equals("")) {
+				member.getMemEmail() == null || member.getMemEmail().equals("") ||
+				member.getAuthList().size() == 0) {
+				// member.getAuthList().size() == 0 : 권한을 한개도 체크하지 않음 (배열)
 		
 			rttr.addFlashAttribute("msgType", "실패 메세지");
 			rttr.addFlashAttribute("msg", "모든 내용을 입력하세요.");
@@ -201,7 +243,34 @@ public class MemberController {
 //			Member mvo = (Member)session.getAttribute("mvo");
 //			member.setMemProfile(mvo.getMemProfile());
 			
+			// 수정한 비밀번호 암호화
+			String encyPw = pwEncoder.encode(member.getMemPw());
+			member.setMemPw(encyPw);  // 암호화 인코딩을 한 pw를 다시 넣어줌
 			
+			// 권한 삭제
+			//  - 기존에 가지고 있던 권한을 삭제하고 다시 수정된 값을 넣어줌
+			mapper.authDelete(member.getMemId());
+			
+			// 권한 입력
+			//   - 권한의 배열 형태 필요 : 회원에 따라 가지고 있는 권한의 수가 다르기 때문에
+			List<Auth> list = member.getAuthList();
+			for(Auth auth : list) {
+				// for each?
+				// list 배열에서 하나씩 떼서 auth에 넣음
+				if(auth.getAuth() != null) {
+					// 권한 값이 존재할 경우에만 권한 테이블에 값 넣기
+					
+					Auth saveVo = new Auth();
+					
+					// 아이디, 권한정보 넣어주기
+					// no의 경우, auth increment 설정되어 있기 때문에 값을 넣지 않아도 됨 
+					saveVo.setMemId(member.getMemId());    // vo에 저장되어 있는 회원 아이디 넣기
+					saveVo.setAuth(auth.getAuth());    // 권한 넣기
+					
+					// 권한 저장
+					mapper.authInsert(saveVo);
+				}
+			}
 			int cnt = mapper.update(member);
 					
 			if(cnt != 1) {
@@ -215,10 +284,13 @@ public class MemberController {
 				// 조건 3. 회원수정 성공 시 index.jsp로 보내고 "회원정보 수정에 성공했습니다" 모달창 띄우기
 				System.out.println("회원수정 성공");
 				rttr.addFlashAttribute("msgType", "성공 메세지");
-				rttr.addFlashAttribute("msg", "회원정보 수정에 성공했습니다.");				
+				rttr.addFlashAttribute("msg", "회원정보 수정에 성공했습니다.");	
+				
+				// 데이터베이스 안에 있는 회원 정보를 다시 가져와서 보여줌
+				Member info = mapper.getMember(member.getMemId());
 				
 				// 로그인한 정보는 session에서 유지되고 있음 -> 회원정보 수정 시 session도 업데이트 해줘야함
-				session.setAttribute("mvo", member);	
+				session.setAttribute("mvo", info);	
 
 				return "redirect:/";		
 		} }

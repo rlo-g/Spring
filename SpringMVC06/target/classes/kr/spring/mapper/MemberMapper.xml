@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- interface 이름을 해당Mapper.java에 맞게 수정하기 -->
+<mapper namespace="kr.spring.mapper.MemberMapper"> 
+
+<!-- MemberMapper에서 사용하는 SQL문장을 모아두는 곳 -->
+	
+	<select id="idCheck" parameterType="String" resultType="kr.spring.entity.Member">
+							<!-- 받아오는 매개변수의 타입 String -->
+									<!--  돌려줄 정보가 있으므로 resultType="kr.spring.entity.Member" -->
+		SELECT * FROM MEMBER WHERE MEMID = #{memId}	
+	</select>
+
+	<insert id="join" parameterType="kr.spring.entity.Member">
+		<!--  insert는 기본적으로 int로 값을 돌려주기 때문에 resultType을 쓰지 않음  -->
+		INSERT INTO MEMBER(MEMIDX, MEMID, MEMPW, MEMNAME, MEMAGE, MEMGENDER, MEMEMAIL, MEMPROFILE)
+		<!-- MEMIDX의 최댓값이 없다면 +1 해주고, 존재한다면 1을 더해주겠다--> 
+		VALUES((SELECT IFNULL(MAX(MEMIDX) + 1, 1) FROM MEMBER MEM), 
+		#{memId}, #{memPw}, #{memName}, #{memAge}, #{memGender}, #{memEmail}, #{memProfile})
+	</insert>
+	
+	<select id="login" resultMap="memberMap">
+							<!-- memberMap 형태로 받아오겠다 -->
+		<!-- 멤버 권한도 함께 가져와야함-->
+		<!-- 암호화 된 pw를 복호화해서 입력한 Pw와 일치하는지 확인해야함 -->
+		SELECT * 
+		FROM MEMBER mem LEFT OUTER JOIN AUTH auth 
+		ON mem.MEMID=auth.MEMID
+		WHERE mem.MEMID = #{username}		
+	</select>
+	
+	<update id="update" parameterType="kr.spring.entity.Member">
+		UPDATE MEMBER
+		SET MEMPW=#{memPw}, MEMNAME=#{memName}, MEMAGE=#{memAge}, MEMGENDER=#{memGender}, MEMEMAIL=#{memEmail}
+		WHERE MEMID=#{memId}
+	</update>
+	
+	<update id="profileUpdate" parameterType="kr.spring.entity.Member">
+		UPDATE MEMBER
+		SET MEMPROFILE=#{memProfile}
+		WHERE MEMID=#{memId}
+	</update>
+	
+	<!-- 회원 정보를 가져오는 sql문 -->
+	<select id="getMember" parameterType="String" resultMap="memberMap">
+							<!-- 받아오는 매개변수의 타입 String -->
+							<!-- sql에서 새로 만들어낸 타입을 반환 -->
+		SELECT * 
+		FROM MEMBER mem LEFT OUTER JOIN AUTH auth 
+		ON mem.MEMID=auth.MEMID
+		WHERE mem.MEMID = #{memId}
+	</select>
+	
+	<resultMap type="kr.spring.entity.Auth" id="authMap">
+										<!-- id : sql에서 사용할 수 있는 새로운 vo 타입을 만듦-->
+		<id property="no" column="no" />   <!-- primaryKey -->
+		<result property="memId" column="memId" />
+		<result property="auth" column="auth" />
+	</resultMap>
+	
+	<resultMap type="kr.spring.entity.Member" id="memberMap">
+		<id property="memIdx" column="memIdx"/>
+		<result property="memId" column="memId"/>
+		<result property="memPw" column="memPw"/>
+		<result property="memName" column="memName"/>
+		<result property="memAge" column="memAge"/>
+		<result property="memGender" column="memGender"/>
+		<result property="memEmail" column="memEmail"/>
+		<result property="memProfile" column="memProfile"/>
+		 <!-- list 형태(배열)인 authList를 위에 정의한 resultMap에서 받아옴  -->
+		<collection property="authList" resultMap="authMap"/>
+	</resultMap>
+	
+	
+	
+	<insert id="authInsert" parameterType="kr.spring.entity.Auth">
+								<!-- 매개변수o, 반환 타입x -->
+		INSERT INTO AUTH(MEMID, AUTH) VALUES(#{memId}, #{auth})
+	</insert>
+	
+	
+	<delete id="authDelete" parameterType="String">
+		DELETE FROM AUTH WHERE MEMID = #{memId}
+	</delete>
+</mapper>
