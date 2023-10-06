@@ -5,6 +5,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- 여러 기능이 있는 함수 가져오기 -->
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,9 +29,17 @@
  	 	<h2>Spring MVC01</h2>
   		<div class="panel panel-default">
     		<div class="panel-heading">Board</div>
-    		<div class="panel-body">Panel Content</div>
+    		
+    		<div class="panel-body">
+    		
+    		</div>
     		<div class="panel-footer">스프링 게시판 - 송은지</div>
   		</div>
 	</div>
+	
+	
+	<script type="text/javascript">
+
+	</script>
 </body>
 </html>
