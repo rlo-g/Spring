@@ -40,12 +40,12 @@
     				</tr>
     				<tr>
     					<td>제목</td>
-    					<td><input type="text" name="title" class="form-control" value="${vo.title }"</td>
+    					<td><input type="text" name="title" class="form-control" value="<c:out value = '${vo.title}'/>" ></td>
     				</tr>
     				<tr>
     					<td>내용</td>
     					<td>
-    						<textarea name="content" class="form-control" rows="10" cols="">${vo.content}</textarea>
+    						<textarea name="content" class="form-control" rows="10" cols=""><c:out value="${vo.content}" /></textarea>
     					</td>
     				</tr>
     				<tr>
@@ -60,13 +60,17 @@
     							 로그인 아이디 == 게시글 아이디 -> 수정/삭제 가능  -->
 	    						<button type="submit" class="btn btn-sm btn-default">수정</button>
 	    						<!-- form 태그 안에서 button에 type을 주지 않으면 기본적으로 submit으로 인식함 -->
-	    						<button type="button" onclick="location.href='${cpath}/board/remove?idx=${vo.idx}'" class="btn btn-sm btn-default">삭제</button>
+	    						<button data-btn="remove" type="button" class="btn btn-sm btn-default">삭제</button>
     						</c:if>
-    						<button type="button" onclick="location.href='${cpath}/board/list'" class="btn btn-sm btn-default">목록</button>
+    						<button type="button" data-btn="list" class="btn btn-sm btn-default">목록</button>
     					</td>
     				</tr>
     			</table>
     		  </form>
+    			<form id="frm" action="" method="get">
+    				<input type="hidden" name="idx" value="${vo.idx}" id="idx">
+    			</form>    			
+    			
     		</div>
     		<div class="panel-footer">스프링 게시판 - 송은지</div>
   		</div>
@@ -74,6 +78,22 @@
 	
 	
 	<script type="text/javascript">
+	   $(document).ready(function(){
+		      $("button").on("click", function(e){
+		         var formData = $("#frm");
+		         var btn = $(this).data("btn");
+
+		         if(btn == "remove"){
+		            formData.attr("action","${cpath}/board/remove");
+		         }else if(btn == "list"){
+		            formData.attr("action","${cpath}/board/list");
+		            formData.find("#idx").remove();
+		         }
+		         
+		         formData.submit();
+		         
+		      });
+		   });
 
 	</script>
 </body>

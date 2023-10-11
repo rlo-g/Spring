@@ -33,13 +33,17 @@
     		<div class="panel-body">
     			<table class="table table-bordered table-hover">
     				<tr>
+    					<td>번호</td>
+    					<td>${vo.idx}</td>
+    				</tr>
+    				<tr>
     					<td>제목</td>
-    					<td>${vo.title }</td>
+    					<td><c:out value="${vo.title}" /></td>
     				</tr>
     				<tr>
     					<td>내용</td>
     					<td>
-    						<textarea class="form-control" readonly="readonly" rows="10" cols="">${vo.content}</textarea>
+    						<textarea class="form-control" readonly="readonly" rows="10" cols=""><c:out value="${vo.content}" /></textarea>
     					</td>
     				</tr>
     				<tr>
@@ -51,16 +55,21 @@
     					<td colspan="2" style="text-align:center;">
     						<c:if test="${not empty mvo}">
     									<!-- 로그인 한 상황 -->
-    							<button onclick="location.href='${cpath}/board/reply?idx=${vo.idx}'" class="btn btn-sm btn-default">댓글</button>    						
+    							<button data-btn="reply" class="btn btn-sm btn-default">답글</button>    						
     						</c:if>
     						<c:if test="${mvo.memID eq vo.memID}">
     						  										<!-- 해당 게시글의 idx를 넘겨준다 (get방식) -->
-	    						<button onclick="location.href='${cpath}/board/modify?idx=${vo.idx}'" class="btn btn-sm btn-default">수정</button>
+	    						<button data-btn="modify" class="btn btn-sm btn-default">수정</button>
 	    					</c:if>
-    						<button onclick="location.href='${cpath}/board/list'" class="btn btn-sm btn-default">목록</button>
+    						<button data-btn="list" class="btn btn-sm btn-default">목록</button>
     					</td>
     				</tr>
     			</table>
+    			
+    			<form id="frm" action="" method="get">
+    				<input type="hidden" name="idx" value="${vo.idx}" id="idx">
+    			</form>
+    			
     		</div>
     		<div class="panel-footer">스프링 게시판 - 송은지</div>
   		</div>
@@ -68,7 +77,33 @@
 	
 	
 	<script type="text/javascript">
-
+		// oneclick 대신 넣은 data-btn / form 태그에 대한 링크처리
+		
+		// 로딩이 될 때까지 기다렸다가 함수 처리
+		$(document).ready(function(){
+			$("button").on("click", function(e){
+				// button 태그 클릭 시 함수 작동
+				
+				// #list인 버튼 클릭 시 현재 비어있는 action 값이 cpath/controller/board/list로 이동
+				// #reply인 클릭 시 action 값이 cpath/controller/board/reply로 이동					
+				var formData = $("#frm"); // form 태그에 대한 정보를 가짐
+				// 현재 클릭한 버튼 요소의 값을 가져옴 (ex. reply, modify, list...)
+				var btn = $(this).data("btn");
+	
+				if(btn == "reply"){
+					// 답글 버튼 클릭
+					formData.attr("action", "${cpath}/board/reply")  // action 값에 해당 경로를 넣는다
+				}else if(btn == "modify"){
+					formData.attr("action", "${cpath}/board/modify")  // action 값에 해당 경로를 넣는다					
+				}else if(btn == "list"){
+					formData.attr("action", "${cpath}/board/list")  // action 값에 해당 경로를 넣는다					
+					formData.find("#idx").remove();  // formdata가 가진 정보 안에서 #idx를 찾아서 삭제
+				}
+				formData.submit();  // formData가 가진 form 태그의 submit을 작동시킴
+			});  
+			
+		});  
+		
 	</script>
 </body>
 </html>

@@ -50,7 +50,10 @@
 	
 	
 	<delete id="delete" parameterType="kr.spring.entity.Board">
-		DELETE FROM TBLBOARD WHERE IDX=#{idx}
+		<!-- 삭제 시 boardavailable 값 0으로 바꿔주기 -->
+		UPDATE TBLBOARD
+		SET BOARDAVAILABLE = 0
+		WHERE IDX=#{idx}
 	</delete>
 	
 	<!-- // 현재 작성하는 댓글을 제외하고 기존 같은 그룹에 있는 댓글의 시퀀스 값을 1씩 올려줘야 한다 -->

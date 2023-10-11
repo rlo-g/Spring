@@ -80,16 +80,42 @@
     						<tr>
 	    						<td>${i.count}</td>
 	    						
-	    						<td><a href="${cpath}/board/get?idx=${vo.idx}">
-	    						<c:if test="${vo.boardLevel > 0}">
-	    							    		<!-- 댓글 달 경우 -->
-	    							<c:forEach begin="0" end="${vo.boardLevel}" step="1">
-	    								<!-- 댓글: 반복 2번, 대댓글: 3번 -->
-	    								<span style="padding-left:8px;"></span>
-	    							</c:forEach>
-	    							 └ [Re]
-	    						</c:if>	    						
-	    						${vo.title}</a></td>
+	    						<td> <!-- 게시글 제목 -->
+	    						<c:if test="${vo.boardAvailable == 0 }">
+		    						<!-- 삭제여부 확인 - 게시글/답글 삭제 시 접근불가 alert으로 알려주기  -->
+	    							<a href="javascript:alert('삭제된 게시글입니다')">
+	    								<!-- href 이동 불가하도록 클릭 시 alert 띄움 -->
+		    						<c:if test="${vo.boardLevel > 0}">
+		    							    		<!-- 댓글 달 경우 -->
+		    							<c:forEach begin="0" end="${vo.boardLevel}" step="1">
+		    								<!-- 댓글: 반복 2번, 대댓글: 3번 -->
+		    								<span style="padding-left:8px;"></span>
+		    							</c:forEach>
+		    							 └ [Re]
+		    						</c:if>	    							    							
+	    							삭제된 게시물입니다. <!-- 글 제목 변경 -->
+	    							</a>	    						
+	    						</c:if>
+	    						
+	    						<!-- 삭제x -->
+			                      <c:if test="${vo.boardAvailable > 0}">
+			                         <a href="${cpath}/board/get?idx=${vo.idx}">
+			                         <c:if test="${vo.boardLevel > 0}">
+			                         					<!-- 댓글 달 경우 -->	
+			                            <c:forEach begin="0" end="${vo.boardLevel}" step="1">
+		    								<!-- 댓글: 반복 2번, 대댓글: 3번 -->
+			                               <span style="padding-left: 15px"></span>
+			                            </c:forEach>
+			                            ㄴ[RE]
+			                         </c:if>
+	    						
+			                         <c:out value="${vo.title }"/>
+			                         </a>
+			                      </c:if>	    						
+	    						</td>
+	    						<!-- XSS(Cross Site Scripting) : 웹 사이트에 스크립트 코드를 주입하여 공격하는 기술
+		    						   ==> 이를 방지하기 위해서 el식을 바로 쓰지 않음  
+		    						   c:out - 문자 그대로 인식해서 출력 -->
 	    						<td>${vo.writer}</td>
 	    						<td>
 	    							<fmt:formatDate value="${vo.indate}" pattern="yyyy-MM-dd"/>

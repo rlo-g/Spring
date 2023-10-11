@@ -59,6 +59,7 @@
     				</div>
     				<button type="reset" class="btn btn-default btn-sm pull-right">취소</button>
     				<button type="submit" class="btn btn-default btn-sm pull-right">등록</button>
+    				<button type="button" onclick="location.href='${cpath}/board/list'" class="btn btn-sm btn-default">목록</button>
     			</form>
     		</div>
     		<div class="panel-footer">스프링 게시판 - 송은지</div>
