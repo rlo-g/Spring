@@ -2,13 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.spring.mapper.BoardMapper">
 
-	<select id="getList" resultType="kr.spring.entity.Board">
-		                   <!-- 반환 타입 -->
-		SELECT * 
-		FROM TBLBOARD 
-		ORDER BY BOARDGROUP DESC, BOARDSEQUENCE ASC
+
+
+   <select id="getList" parameterType="kr.spring.entity.Criteria" resultType="kr.spring.entity.Board">
+		                   													<!-- 반환 타입 -->
+      SELECT * FROM TBLBOARD 
+      ORDER BY BOARDGROUP DESC, BOARDSEQUENCE ASC
 		<!--  BOARDGROUP 최신순, BOARDSEQUENCE는 오래된 순서대로(원본글0 -> 댓글1 -> 댓글2) -->
-	</select>
+      LIMIT #{pageStart}, #{perPageNum}
+		<!--  제한 : 시작 페이지번호, 페이지 당 보여질 게시글 수 -->
+   </select>
 
 
 	<insert id="insert" parameterType="kr.spring.entity.Board">
@@ -76,6 +79,10 @@
 	      BOARDGROUP, BOARDSEQUENCE, BOARDLEVEL, BOARDAVAILABLE)
 	      values(#{idx},#{memID},#{title},#{content},#{writer},#{boardGroup},#{boardSequence},#{boardLevel},1)
 	   </insert>	
+	   
+	  <select id="totalCount" resultType="int">
+	  	  SELECT COUNT(*) FROM TBLBOARD
+	  </select>
 	
 	
 </mapper>

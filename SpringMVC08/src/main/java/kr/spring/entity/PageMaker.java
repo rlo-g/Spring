@@ -48,6 +48,30 @@ public class PageMaker {
 			startPage = 1;  
 		}
 		
+		
+		// 3. 최종페이지가 맞는지 유효성 검사
+		//  ex) 실제로 글이 101개라면 20개 페이지 + 1개 페이지 필요
+		//      --> 마지막 1개의 페이지 계산 필요
+		int tempEndPage = (int)(Math.ceil(totalCount / (double)cri.getPerPageNum()));     // 중간 저장소 -- 소숫점 발생 시 반올림
+		
+		
+		// 4. 화면에 보여질 마지막 페이지 유효성 체크
+		// 현재 10페이지를 보고 있고 총 게시글의 수가 55개인 경우, endPage는 로 나오지만 실제 필요 페이지 수 11개
+		if(tempEndPage < endPage) {
+			// tempEndPage : 실제 마지막 번호(페이지) 알 수 있음 / endPage : 러프하게 잡아둔 예상 페이지 수
+			// 실제 페이지 < 예상 페이지
+			endPage = tempEndPage;  // 예상한 마지막 페이지가 실제 구현 페이지 숫자보다 높으면 치환
+		}
+		
+		
+		// 5. 이전/다음 페이지 버튼 존재여부 (삼항연산자)
+		prev = (startPage == 1) ? false : true;
+				// 조건식     --> true일 경우 실행 : false일 경우 실행
+		next = (endPage < tempEndPage) ? true : false;
+			// 현재 마지막 페이지 < 총 마지막 페이지 
+		
+		
+		
 	}
 	
 	

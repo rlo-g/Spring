@@ -7,5 +7,6 @@
 <aop-project name="SpringMVC05"/>
 <aop-project name="SpringMVC06"/>
 <aop-project name="SpringMVC07"/>
+<aop-project name="SpringMVC08"/>
 <aop-project name="SpringBook"/>
 </aop-reference-model>

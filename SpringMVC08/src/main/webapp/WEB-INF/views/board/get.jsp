@@ -68,6 +68,8 @@
     			
     			<form id="frm" action="" method="get">
     				<input type="hidden" name="idx" value="${vo.idx}" id="idx">
+    				<input type="hidden" name="page" value="${cri.page}" >
+    				<input type="hidden" name="perPageNum" value="${cri.perPageNum}">
     			</form>
     			
     		</div>

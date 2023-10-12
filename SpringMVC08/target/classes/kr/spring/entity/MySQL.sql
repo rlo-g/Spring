@@ -15,25 +15,34 @@ CREATE TABLE TBLBOARD(
 	PRIMARY KEY(IDX)
 )
 
+
 INSERT INTO TBLBOARD
 	SELECT IFNULL(MAX(IDX) + 1, 1),
-	'aischool','공지사항','다음주 월요일 쉽니다','교육운영부',NOW(),0,
+	'aischool','공지사항','목요일 공지사항','교육운영부',NOW(),0,
 	IFNULL(MAX(BOARDGROUP) + 1, 1),
 	0, 0, 1
 	FROM TBLBOARD;
 
 SELECT * FROM TBLBOARD;
-	
+
+
 INSERT INTO TBLBOARD
 	SELECT IFNULL(MAX(IDX) + 1, 1),
-	'hammm','수요일임','집가고싶음','햄미',NOW(),0,
+	'hammi','아홉번재','집가고싶음','햄햄햄',NOW(),0,
 	IFNULL(MAX(BOARDGROUP) + 1, 1),
 	0, 0, 1
 	FROM TBLBOARD;
 	
 INSERT INTO TBLBOARD
 	SELECT IFNULL(MAX(IDX) + 1, 1),
-	'meom','ㅠㅠ','집가고싶음','멈멈',NOW(),0,
+	'hammm','열번째 게시글','집가고싶음','햄미',NOW(),0,
+	IFNULL(MAX(BOARDGROUP) + 1, 1),
+	0, 0, 1
+	FROM TBLBOARD;
+	
+INSERT INTO TBLBOARD
+	SELECT IFNULL(MAX(IDX) + 1, 1),
+	'meom','11','집가고싶음','멈',NOW(),0,
 	IFNULL(MAX(BOARDGROUP) + 1, 1),
 	0, 0, 1
 	FROM TBLBOARD;
@@ -55,12 +64,12 @@ INSERT INTO TBLMEMBER(MEMID, MEMPW, MEMNAME, MEMPHONE)
 VALUES('aischool', '1234', '교육운영부', '010-1234-5678');
 
 INSERT INTO TBLMEMBER(MEMID, MEMPW, MEMNAME, MEMPHONE)
-VALUES('hammm', '1234', '햄미', '010-1234-5678');
+VALUES('hammi', '1234', '햄햄햄', '010-1234-5678');
 
 INSERT INTO TBLMEMBER(MEMID, MEMPW, MEMNAME, MEMPHONE)
-VALUES('meom', '1234', '멈멈', '010-1234-5678');
+VALUES('admin', '1234', 'admin', '010-1234-5678');
 
 SELECT * FROM TBLMEMBER;
 
-SELECT * FROM TBLBOARD;
+DELETE FROM TBLBOARD;
 

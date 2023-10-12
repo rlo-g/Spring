@@ -3,6 +3,7 @@ package kr.spring.service;
 import java.util.List;
 
 import kr.spring.entity.Board;
+import kr.spring.entity.Criteria;
 import kr.spring.entity.Member;
 
 public interface BoardService {
@@ -11,7 +12,7 @@ public interface BoardService {
 	
 	// 게시글 전체 목록 보기 기능
 	// controller가 게시글 목록 보기 기능을 요청하면 service는 이를 수행 후 controller에게 data(게시글 목록)를 돌려줘야 함
-	public List<Board> getList();
+	public List<Board> getList(Criteria cri);
 
 	public Member login(Member vo);
 	
@@ -25,5 +26,6 @@ public interface BoardService {
 
 	public void reply(Board vo);
 
+	public int totalCount();
 
 }
