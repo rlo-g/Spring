@@ -215,7 +215,6 @@
 	         });
 
 			
-	      	
 			// 상세보기 클릭 시 이동
 			$(".move").on("click", function(e){
 				e.preventDefault();

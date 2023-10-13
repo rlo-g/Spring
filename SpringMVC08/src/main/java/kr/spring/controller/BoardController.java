@@ -70,6 +70,7 @@ public class BoardController {
 	}
 	
 	
+	
 	@GetMapping("/get")											// model.addAttribute(cri)와 같은 역할 - cri 정보를 가지고 이동
 	public String get(@RequestParam("idx") int idx, Model model, @ModelAttribute("cri") Criteria cri) {
 		
@@ -81,7 +82,7 @@ public class BoardController {
 	
 	
 	@GetMapping("/modify")
-	public String modify(@RequestParam("idx") int idx, Model model) {
+	public String modify(@RequestParam("idx") int idx, Model model, @ModelAttribute("cri") Criteria cri) {
 		// get 방식을 통해 보내준 idx를 int idx로 받는다
 		
 		Board vo = service.get(idx);   // 해당되는 idx의 게시글을 가져옴
@@ -90,32 +91,41 @@ public class BoardController {
 	}
 	
 	@PostMapping("/modify")
-	public String modify(Board vo) {
+	public String modify(Board vo, Criteria cri, RedirectAttributes rttr) {
 		// 중복 정의 : 오버로딩
-		
+		System.out.println(vo.toString());
 		service.modify(vo);
+		
+		rttr.addAttribute("page", cri.getPage());  // jsp에서 버튼 눌렀을 때 value를 통해 넘어온 값
+		rttr.addAttribute("perPageNum", cri.getPerPageNum());
+		
 		return "redirect:/board/list";
 	}
 	
 	
 	@GetMapping("/remove")
-	public String remove(@RequestParam("idx") int idx) {
+	public String remove(@RequestParam("idx") int idx, Criteria cri, RedirectAttributes rttr) {
 		service.remove(idx);
-
-		return "redirect:/board/list";
+		
+		rttr.addAttribute("page", cri.getPage());  // jsp에서 버튼 눌렀을 때 value를 통해 넘어온 값
+		rttr.addAttribute("perPageNum", cri.getPerPageNum());
+		
+		return "redirect:/board/list";  // redirect 방식으로 페이지 이동 --> model 안에 값을 넣지 못함 ==> 대신 RedirectAttributes 사용
 	}
 	
 	@GetMapping("/reply")
-	public String reply(@RequestParam("idx") int idx, Model model) {
+	public String reply(@RequestParam("idx") int idx, Model model, @ModelAttribute("cri") Criteria cri) {
 		Board vo = service.get(idx);  // 댓글 달고 싶은 게시글의 정보 가져오기
 		model.addAttribute("vo", vo);  // reply.jsp로 보내주기 위해서 model에 담기
-		return "board/reply";  // reply.jsp로 이동
+		return "board/reply";  // reply.jsp로 이동(forward 방식) --> modelAttribute
 	}
 	
 	@PostMapping("/reply")
-	public String reply(Board vo) {
+	public String reply(Board vo, Criteria cri, RedirectAttributes rttr) {
 		// 부모(원본)글 번호, 작성id, 제목, 답글, 작성자 이름을 받아옴
 		service.reply(vo);
+		rttr.addAttribute("page", cri.getPage());  // jsp에서 버튼 눌렀을 때 value를 통해 넘어온 값
+		rttr.addAttribute("perPageNum", cri.getPerPageNum());
 		return "redirect:/board/list";
 	}
 }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.mapper.BoardMapper">
+
+	<!-- 검색 기능 -->
+	<sql id="search">
+		<if test="type =='writer'">
+			WHERE WRITER LIKE CONCAT('%', #{keyword}, '%')
+		</if>	
+		<if test="type == 'title'">		
+			WHERE TITLE LIKE CONCAT('%', #{keyword}, '%')
+		</if>	
+		<if test="type == 'content'">
+			WHERE CONTENT LIKE CONCAT('%', #{keyword}, '%')		
+		</if>	
+	</sql>
+	
+	
+
+   <select id="getList" parameterType="kr.spring.entity.Criteria" resultType="kr.spring.entity.Board">
+		                   													<!-- 반환 타입 -->
+      SELECT * FROM TBLBOARD 
+      <include refid="search" /> <!-- 검색 기능 sql문을 넣어줌 -->
+      ORDER BY BOARDGROUP DESC, BOARDSEQUENCE ASC
+		<!--  BOARDGROUP 최신순, BOARDSEQUENCE는 오래된 순서대로(원본글0 -> 댓글1 -> 댓글2) -->
+      LIMIT #{pageStart}, #{perPageNum}
+		<!--  제한 : 시작 페이지번호, 페이지 당 보여질 게시글 수 -->
+   </select>
+
+
+	<insert id="insert" parameterType="kr.spring.entity.Board">
+		INSERT INTO TBLBOARD(IDX, MEMID, TITLE, CONTENT, WRITER, BOARDGROUP, BOARDSEQUENCE, BOARDLEVEL, BOARDAVAILABLE)
+		SELECT IFNULL(MAX(IDX) + 1, 1),
+		#{memID}, #{title}, #{content}, #{writer},
+		IFNULL(MAX(BOARDGROUP) + 1, 1),
+		0, 0, 1
+		FROM TBLBOARD
+	</insert>
+
+
+   <insert id="insertSelectKey" parameterType="kr.spring.entity.Board">
+   	<!-- 동적 SQL 방식 (위와 동일)-->
+      <selectKey keyProperty="idx,boardGroup" resultType="kr.spring.entity.Board" order="BEFORE">
+         SELECT IFNULL(MAX(IDX) + 1, 1) as idx,
+               IFNULL(MAX(BOARDGROUP) + 1, 1) as boardGroup
+               FROM TBLBOARD
+      </selectKey>
+      INSERT INTO TBLBOARD(IDX, MEMID, TITLE, CONTENT, WRITER,
+      BOARDGROUP, BOARDSEQUENCE, BOARDLEVEL, BOARDAVAILABLE)
+      values(#{idx},#{memID},#{title},#{content},#{writer},#{boardGroup},0,0,1)
+   </insert>	
+
+	
+	<select id="login" parameterType="kr.spring.entity.Member" resultType="kr.spring.entity.Member">
+		SELECT * FROM TBLMEMBER WHERE MEMID=#{memID} AND MEMPW=#{memPW}
+	</select>
+	
+	
+	<select id="read" parameterType="int" resultType="kr.spring.entity.Board">
+		SELECT * FROM TBLBOARD WHERE IDX=#{idx}
+	</select>
+	
+	
+	<update id="update" parameterType="kr.spring.entity.Board">
+		UPDATE TBLBOARD SET TITLE=#{title}, CONTENT=#{content} WHERE IDX=#{idx} 
+	</update>
+	
+	
+	<delete id="delete" parameterType="kr.spring.entity.Board">
+		<!-- 삭제 시 boardavailable 값 0으로 바꿔주기 -->
+		UPDATE TBLBOARD
+		SET BOARDAVAILABLE = 0
+		WHERE IDX=#{idx}
+	</delete>
+	
+	<!-- // 현재 작성하는 댓글을 제외하고 기존 같은 그룹에 있는 댓글의 시퀀스 값을 1씩 올려줘야 한다 -->
+	<update id="replySeqUpdate" parameterType="kr.spring.entity.Board">
+		UPDATE TBLBOARD                    <!-- 부모글에 대한 정보를 받아옴 -->
+		SET BOARDSEQUENCE=BOARDSEQUENCE+1
+		WHERE BOARDGROUP = #{boardGroup}
+		AND BOARDSEQUENCE > #{boardSequence} <!-- 부모 글의 시퀀스보다 큰 값 -->
+	</update>
+	
+	
+	   <insert id="replyInsert" parameterType="kr.spring.entity.Board">
+	   	<!-- 동적 SQL 방식 -->
+	      <selectKey keyProperty="idx" resultType="kr.spring.entity.Board" order="BEFORE">
+	      <!-- 부모와 똑같은 그룹 값을 가지므로 boardGroup select 할 필요 없음 -->
+	         SELECT IFNULL(MAX(IDX) + 1, 1) as idx
+	               FROM TBLBOARD
+	      </selectKey>
+	      INSERT INTO TBLBOARD(IDX, MEMID, TITLE, CONTENT, WRITER,
+	      BOARDGROUP, BOARDSEQUENCE, BOARDLEVEL, BOARDAVAILABLE)
+	      values(#{idx},#{memID},#{title},#{content},#{writer},#{boardGroup},#{boardSequence},#{boardLevel},1)
+	   </insert>	
+	   
+	   
+	  <select id="totalCount" resultType="int" parameterType="kr.spring.entity.Criteria">
+	  	  SELECT COUNT(*) FROM TBLBOARD
+	  	  <include refid="search"/>  <!-- 검색 필터된 게시글의 수만 셀 수 있도록 -->
+	  </select>
+	
+	
+</mapper>

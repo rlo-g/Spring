@@ -30,33 +30,35 @@
     		<div class="panel-heading">Board</div>
     		
     		<div class="panel-body">
-    			<form action="${cpath}/board/reply" method="post">
+    			<form id="frm" method="post">
     			
-    				<input type="hidden" name="memID" value="${mvo.memID}">
-    				<input type="hidden" name="idx" value="${vo.idx}">
+    				<input type="hidden" name="page" value="${cri.page}">
+    				<input type="hidden" name="perPageNum" value="${cri.perPageNum}">
+    			
+    			
+    				<input type="hidden" name="memID" id="memID" value="${mvo.memID}">
+    				<input type="hidden" name="idx" id="idx" value="${vo.idx}">
 	    				<!-- 댓글을 달 게시글(원본 글)의 번호를 넘김 -->
     			
     		
     				<div class="form-group">
     					<label>제목</label>
     							<!-- 기존 게시글 제목 -->
-    					<input value="<c:out value='${vo.title}'/>" type="text" name="title" class="form-control">    					
+    					<input value="<c:out value='${vo.title}'/>" type="text" name="title" id="title" class="form-control">    					
     				</div>
     				<div class="form-group">
     					<label>답변</label>
-    					<textarea name="content" class="form-control" rows="10" cols=""></textarea>    					
+    					<textarea name="content" id="content" class="form-control" rows="10" cols=""></textarea>    					
     				</div>
     				<div class="form-group">
     					<label>작성자</label>
-    					<input type="text" name="writer" class="form-control" value="${mvo.memName}" readonly="readonly">    					
+    					<input type="text" name="writer" id="writer" class="form-control" value="${mvo.memName}" readonly="readonly">    					
     				</div>
-    				<button type="submit" class="btn btn-default btn-sm ">등록</button>
-    				<button type="reset" class="btn btn-default btn-sm ">취소</button>
+    				<button data-btn="reply" type="button" class="btn btn-default btn-sm ">답글등록</button>
+    				<button data-btn="reset" type="button" class="btn btn-default btn-sm ">취소</button>
     				<button data-btn="list" type="button" class="btn btn-default btn-sm ">목록</button>
-    			</form>
-    			
-    			<form id="frm" action="" method="get">
-    				<input type="hidden" name="idx" value="${vo.idx}" id="idx">
+    			 			
+
     			</form>    			
     		</div>
     		<div class="panel-footer">스프링 게시판 - 송은지</div>
@@ -73,6 +75,20 @@
 				 if(btn == "list"){
 		            formData.attr("action","${cpath}/board/list");
 		            formData.find("#idx").remove();
+		            
+		            formData.attr("method", "get");  // 목록 버튼 클릭 시 method를 get으로 변경
+		            
+		            formData.find("#memID").remove();
+		            formData.find("#title").remove();
+		            formData.find("#content").remove();
+		            formData.find("#writer").remove();
+
+		         }else if(btn =="reply"){
+		            formData.attr("action","${cpath}/board/reply");
+		        	 
+		         }else if(btn == "reset"){
+		        	 formData[0].reset()
+		        	 return;  // submit으로 넘어가지 않고 reset()에서 끝내야하므로
 		         }
 		         
 		         formData.submit();
