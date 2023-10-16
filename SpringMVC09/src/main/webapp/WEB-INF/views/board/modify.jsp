@@ -69,7 +69,11 @@
     			</table>
     		  		  	    		  	    		  	
     				<input type="hidden" name="page" value="${cri.page}" >
-    				<input type="hidden" name="perPageNum" value="${cri.perPageNum}">    				
+    				<input type="hidden" name="perPageNum" value="${cri.perPageNum}">
+    				
+					<!-- 검색 후, 수정한 다음 검색된 페이지 유지를 위해 type, keyword도 함께 넘기기 위한 코드 추가 -->
+		            <input type="hidden" name="type" value="${cri.type}">  <!-- 페이징 기법 필요 x : pageMaker 사용 x ==> cri만 -->
+		            <input type="hidden" name="keyword" value="${cri.keyword}">    				    				
     		  </form>    			
     			
     		</div>

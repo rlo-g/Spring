@@ -18,7 +18,7 @@
 	
 
    <select id="getList" parameterType="kr.spring.entity.Criteria" resultType="kr.spring.entity.Board">
-		                   													<!-- 반환 타입 -->
+		                	<!-- 매개변수 : critetria(검색 정보 존재) --> 	<!-- 반환 타입 -->
       SELECT * FROM TBLBOARD 
       <include refid="search" /> <!-- 검색 기능 sql문을 넣어줌 -->
       ORDER BY BOARDGROUP DESC, BOARDSEQUENCE ASC

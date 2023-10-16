@@ -98,6 +98,9 @@ public class BoardController {
 		
 		rttr.addAttribute("page", cri.getPage());  // jsp에서 버튼 눌렀을 때 value를 통해 넘어온 값
 		rttr.addAttribute("perPageNum", cri.getPerPageNum());
+		// 검색 필터 이용 시 사용한 type, keyword도 함께 넘김(매개변수로 model에 cri가 저장되어 있지 않으므로)
+		rttr.addAttribute("type", cri.getType());
+		rttr.addAttribute("keyword", cri.getKeyword());
 		
 		return "redirect:/board/list";
 	}
@@ -109,6 +112,9 @@ public class BoardController {
 		
 		rttr.addAttribute("page", cri.getPage());  // jsp에서 버튼 눌렀을 때 value를 통해 넘어온 값
 		rttr.addAttribute("perPageNum", cri.getPerPageNum());
+		
+		rttr.addAttribute("type", cri.getType());
+		rttr.addAttribute("keyword", cri.getKeyword());
 		
 		return "redirect:/board/list";  // redirect 방식으로 페이지 이동 --> model 안에 값을 넣지 못함 ==> 대신 RedirectAttributes 사용
 	}
@@ -126,6 +132,10 @@ public class BoardController {
 		service.reply(vo);
 		rttr.addAttribute("page", cri.getPage());  // jsp에서 버튼 눌렀을 때 value를 통해 넘어온 값
 		rttr.addAttribute("perPageNum", cri.getPerPageNum());
+		
+		rttr.addAttribute("type", cri.getType());
+		rttr.addAttribute("keyword", cri.getKeyword());
+		
 		return "redirect:/board/list";
 	}
 }

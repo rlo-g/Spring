@@ -70,6 +70,10 @@
     				<input type="hidden" name="idx" value="${vo.idx}" id="idx">
     				<input type="hidden" name="page" value="${cri.page}" >
     				<input type="hidden" name="perPageNum" value="${cri.perPageNum}">
+    				
+		            <!-- 검색 후, 게시글 확인-목록 과정에서 type, keyword도 함께 넘기기 위한 코드 추가 -->
+		            <input type="hidden" name="type" value="${cri.type}">  <!-- 페이징 기법 필요 x : pageMaker 사용 x ==> cri만 -->
+		            <input type="hidden" name="keyword" value="${cri.keyword}">    				
     			</form>
     			
     		</div>

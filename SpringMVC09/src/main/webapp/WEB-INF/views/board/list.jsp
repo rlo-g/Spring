@@ -26,7 +26,7 @@
 	<!-- controller와 resolver를 거쳐 jsp 파일로 오게됨 -->
 	
 	<div class="container">
- 	 	<h2>Spring MVC09</h2>
+ 	 	<h2><a href="${cpath}/board/list" style="color: inherit;">Spring MVC09</a></h2>
   		<div class="panel panel-default">
     		<div class="panel-heading">
     			
@@ -169,26 +169,33 @@
 		              </c:if>
 		           </ul>
 		           
+
 		           <form action="${cpath}/board/list" id="pageFrm">
 		              <input type="hidden" id="page" name="page" value="${pageMaker.cri.page}"> <!-- 현재 페이지 번호 -->
-		              <input type="hidden" id="perPageNum" name="perPageNum" value="${pageMaker.cri.perPageNum}">           
+		              <input type="hidden" id="perPageNum" name="perPageNum" value="${pageMaker.cri.perPageNum}">
+		              <!-- 페이지 변경 시 type, keyword도 함께 넘기기 위한 코드 추가 -->
+		              <input type="hidden" name="type" value="${pageMaker.cri.type}">           
+		              <input type="hidden" name="keyword" value="${pageMaker.cri.keyword}">           
 		           </form>
 
 				</div>    			
+    		
+    		
     		
     			<!-- 검색 메뉴 -->
     			<div>
     				<form class="form-inline" action="${cpath}/board/list" method="post" style="text-align:center">
     					<div class="form-group">
     						<select name="type" class="form-control">
-    							<option value="writer">작성자</option>
-    							<option value="title">제목</option>
-    							<option value="content">내용</option>   						
+    							<option value="writer" ${pageMaker.cri.type=='writer' ? 'selected':''}>작성자</option>
+    							<!-- 저장되어 있는 타입이 writer 작성 값과 같다면 해당 옵션을 선택하겠다 / 다르면 빈칸 -->
+    							<option value="title" ${pageMaker.cri.type=='title' ? 'selected':''}>제목</option>
+    							<option value="content" ${pageMaker.cri.type=='content' ? 'selected':''}>내용</option>   						
     						</select>
     					</div>
     					<div class="form-group">
-    						<input type="text" class="form-control" name="keyword">
-    					</div>
+    						<input type="text" class="form-control" name="keyword" value="${pageMaker.cri.keyword}">
+    					</div>                                                       <!-- 검색한 키워드 유지 -->
     					<button type="submit" class="btn btn-success">검색</button>
     				</form>    			
     			</div>
