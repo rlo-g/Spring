@@ -9,9 +9,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Entity  // Board VO가 Database Table로 만들 때 설정
 @Data
+@ToString
 public class Board {  // VO <--- ORM ---> Table
 	
 	@Id  // PK를 의미
