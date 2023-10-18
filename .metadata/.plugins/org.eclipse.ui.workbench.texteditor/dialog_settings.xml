@@ -6,8 +6,10 @@
 		<item key="wholeword" value="true"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="view"/>
+		<item key="selection" value="&lt;a"/>
 		<list key="findhistory">
+			<item value="&lt;a"/>
+			<item value="a"/>
 			<item value="view"/>
 			<item value="wform"/>
 			<item value="ta"/>
