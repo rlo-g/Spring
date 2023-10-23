@@ -12,6 +12,14 @@
 <!-- ContextPath (cpath) : 시작경로를 가져옴 -->
 <c:set var="cpath" value="${pageContext.request.contextPath}"/>    
     
+<!-- Spring Security 관련 태그 라이브러리 -->
+<!-- jstl(아래)  -->
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<!-- 로그인한 계정정보(el - mvc06) -->
+<c:set var="user" value="${SPRING_SECURITY_CONTEXT.authentication.principal}" />
+<!-- 권한정보(el) -->
+<c:set var="auth" value="${SPRING_SECURITY_CONTEXT.authentication.authorities}" />
     
 <!DOCTYPE html>
 <html lang="en">
@@ -43,22 +51,41 @@
     			<!-- clo-lg : 비율의 총 합이 12가 되어야 함 -->
     			<div class="card" style="min-height: 500px; max-height: 1000px;">
     				<!-- 카드 형식의 테두리 -->
-    				<div class="card-body">
-    					<h4 class="card-title" style="text-align:center; font-size: 20px;">GUEST</h4>
+    				<div class="card-body" style="text-align:center; margin-top: 20%;">
+    					<strong><sec:authentication property="principal.member.name"/> <!-- 회원 이름 --> </strong>  					
     					<p class="card-text" style="text-align:center; font-size: 14px;">회원님 Welcome!</p>
-    					<form action="">
-    						<div class="form-group">
-    							<label for="memID" style="font-size: 13px">ID</label>
-    							<input type="text" class="form-control" name="memID" id="memID">
-    						</div>					<!-- 한줄 다 채움 -->
-    						
-    						<div class="form-group">
-    							<label for="memPwd" style="font-size: 13px">PASSWORD</label>
-    							<input type="password" class="form-control" name="memPwd" id="memPwd">
-    						</div>
-    						
-    						<button type="submit" class="form-control btn btn-sm btn-light">Login</button>
+    					<form action="${cpath}/member/logout">
+    						<button type="submit" class="form-control btn btn-sm btn-secondary">Logout</button>
     					</form>
+    					
+    					<!-- 권한 정보 -->
+    					<br>
+    					<hr>
+    					<div style="font-size: 13px; margin-bottom: 20px;">
+	    					현재 권한 : <sec:authentication property="principal.member.role"/>
+    					</div>
+    					
+    					<!-- 권한에 따라 다른 화면 구성 -->
+    					<sec:authorize access="hasRole('ADMIN')">
+    						<!--  <==> if문 -->
+    						<button class="form-control btn btn-xs btn-light" style="font-size: 11px;">관리자페이지</button>
+    						<br>
+    						<br>
+    						<button class="form-control btn btn-xs btn-light" style="font-size: 11px;">회원목록</button>
+    						<br>
+    						<br>
+    						<button class="form-control btn btn-xs btn-light" style="font-size: 11px;">개인정보수정</button>   					
+    					</sec:authorize>
+    					<sec:authorize access="hasRole('MANAGER')">
+    						<button class="form-control btn btn-xs btn-light" style="font-size: 11px;">회원목록</button>
+    						<br>
+    						<br>
+    						<button class="form-control btn btn-xs btn-light" style="font-size: 11px;">개인정보수정</button>   					
+    					</sec:authorize>
+    					<sec:authorize access="hasRole('MEMBER')">
+    						<!--  <==> if문 -->
+    						<button class="form-control btn btn-xs btn-light" style="font-size: 11px;">개인정보수정</button>   					
+    					</sec:authorize>
     				</div>   			
     			</div>
     		</div>
@@ -92,7 +119,7 @@
     			<div class="card" style="min-height: 500px; max-height: 1000px;">
     				<!-- 카드 형식의 테두리 -->
     				<div class="card-body" >
-    					<form id="regForm" action="${cpath}/register" method="post">
+    					<form id="regForm" action="${cpath}/board/register" method="post">
     					
     						<input type="hidden" id="idx" name="idx" value=""> <!--  -->
     						<div class="form-group">
@@ -106,7 +133,7 @@
     						</div>
     						<div class="form-group">
     							<label for="writer" style="font-size: 12px">작성자</label>
-    							<input type="text" class="form-control" name="writer" id="writer" placeholder="Enter Writer" style="font-size: 13px;">
+    							<input readonly="readonly" value="<sec:authentication property='principal.member.name'/>" type="text" class="form-control" name="writer" id="writer" placeholder="Enter Writer" style="font-size: 13px;">
     						</div>
     						<div id="regDiv" style="text-align:center;">
 	    						<button type="button" data-oper="register" class="btn btn-sm btn-secondary" style="font-size: 12px">등록</button>
@@ -153,11 +180,11 @@
 				
 			}else if(oper == "list") {
 				// 목록 버튼 클릭 시 글쓰기 폼이 다시 나오게 하도록
-				location.href="${cpath}/list";  // 새로고침
+				location.href="${cpath}/board/list";  // 새로고침
 				
 			}else if(oper == "remove") {
 				var idx = regForm.find("#idx").val();  // #idx의 value 값을 가져옴
-				location.href = "${cpath}/remove?idx="+idx;  // idx 값은 /remove에 보내줌
+				location.href = "${cpath}/board/remove?idx="+idx;  // idx 값은 /remove에 보내줌
 				
 			}else if(oper == "updateForm"){
 				regForm.find("#title").attr("readonly", false);
@@ -178,7 +205,7 @@
 			var idx = $(this).attr("href");  // 클릭한 해당 요소의 href 속성값 가져오기
 			
 			$.ajax({ // 비동기 방식 요청
-				url : "${cpath}/get",   // 이동 url
+				url : "${cpath}/board/get",   // 이동 url
 				type : "get",    // 요청방식 : get
 				data : {"idx":idx},    // 보내줄 데이터
 				dataType : "json",   // 게시글 받아올 방식
@@ -208,6 +235,18 @@
 		
 		regForm.find("#idx").val(vo.idx);   // hidden으로 숨겨둔 idx input 값에 각 게시글에 대한 value 부여
 		
+		if("${user.member.name}" == vo.writer) {
+			// el식으로 가져온 spring security 안의 이름(로그인 이름)과 게시글 작성자 이름이 같다면
+			// 버튼 비활성화 취소
+			$("button[data-oper='updateForm']").attr("disabled", false);
+			$("button[data-oper='remove']").attr("disabled", false);
+		}else{
+			// 다르면 버튼 비활성화
+			$("button[data-oper='updateForm']").attr("disabled", true);
+			$("button[data-oper='remove']").attr("disabled", true);
+			
+		}
+		
 	}
 	
 	
@@ -218,7 +257,7 @@
 		var regForm = $("#regForm");
 		
 		// 수정 버튼 클릭 시 regForm의 action 값 변경
-		regForm.attr("action", "${cpath}/modify");
+		regForm.attr("action", "${cpath}/board/modify");
 		regForm.submit();
 	}
 	
